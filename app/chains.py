@@ -41,19 +41,56 @@ class Chain():
         
         return res if isinstance(res, list) else [res]
     
-    def write_mail(self, job, links):
+    def extract_summary(self, resume_text):
+        prompt_summary = PromptTemplate.from_template(
+            """
+            ### RESUME TEXT:
+            {resume_text}
+
+            ### INSTRUCTION:
+            Summarize the resume above by identifying key details such as skills, experiences, education, and any relevant achievements.
+            Focus on the main strengths that would be important for a potential employer. Return the summary in concise bullet points.
+            Also extract the important links such as LinkedIn.
+            """
+        )
+        
+        # Run the summary extraction chain
+        chain_summary = prompt_summary | self.llm
+        summary_res = chain_summary.invoke(input={'resume_text': resume_text})
+        
+        # Return the extracted summary text
+        return summary_res.content
+    
+    def write_mail(self, job, resume_summary, only_links=False):
+        """
+        Generate a cold email based on the job details and resume summary.
+        
+        Args:
+            job (dict): A dictionary containing the job details extracted from the website.
+            resume_summary (str): A string containing the extracted resume summary.
+            only_links (bool): If True, only include the links from the resume summary.
+        """
+        
         
         prompt_email = PromptTemplate.from_template(
             """
             ### JOB DESCRIPTION:
             {job_description}
+            
+            ### RESUME SUMMARY:
+            {resume_summary}
+            
+            ### Condition:
+            Do I only want the links from the resume summary? {only_links}
+            
 
             ### INSTRUCTION:
             You are Yuval, a computer science student looking to apply for a job.
             Your job is to write a compelling cold email to the hiring manager regarding the job mentioned above, 
             highlighting your capability in fulfilling their needs. 
             Emphasize your relevant skills, experiences, and enthusiasm for the role.
-            Also, add the most relevant ones from the following links to showcase your portfolio: {link_list}
+            Mention of the projects you have done and how they align with the job requirements.
+            Also, add the important links from the following links from the resume summary.
             Remember you are Yuval, a computer science student.
             Do not provide a preamble.
             ### EMAIL (NO PREAMBLE):
@@ -63,10 +100,43 @@ class Chain():
          
         chain_email = prompt_email | self.llm
         
-        res = chain_email.invoke(input={'job_description': job, 'link_list': links})
+        res = chain_email.invoke(input={'job_description': job, 'resume_summary': resume_summary, 'only_links': only_links})
         return res.content
         
+    def write_cover_letter(self, job, resume_summary):
+        """
+        Generate a cover letter based on the job details and resume summary.
+        
+        Args:
+            job (dict): A dictionary containing the job details extracted from the website.
+            resume_summary (str): A string containing the extracted resume summary.
+        """
+        
+        prompt_cover_letter = PromptTemplate.from_template(
+            """
+            ### JOB DESCRIPTION:
+            {job_description}
+            
+            ### RESUME SUMMARY:
+            {resume_summary}
+            
+            ### INSTRUCTION:
+            You are Yuval, a computer science student looking to apply for a job.
+            Your job is to write a compelling cover letter to the hiring manager regarding the job mentioned above, 
+            highlighting your capability in fulfilling their needs. 
+            Emphasize your relevant skills, experiences, and enthusiasm for the role.
+            Mention of the projects you have done and how they align with the job requirements.
+            Remember you are Yuval, a computer science student.
+            Do not provide a preamble.
+            ### COVER LETTER (NO PREAMBLE):
 
+            """
+        )
+        
+        chain_cover_letter = prompt_cover_letter | self.llm
+        
+        res = chain_cover_letter.invoke(input={'job_description': job, 'resume_summary': resume_summary})
+        return res.content
 
 if __name__ == '__main__':
     api_key = os.getenv('API_KEY')
