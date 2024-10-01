@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def create_streamlit_app(llm, clean_text):
-    st.title("📧 Cold Mail Generator")
+    st.title("📧 OutReachAce")
 
     # File uploader for resume
     resume_file = st.file_uploader("Upload your resume (PDF):", type=["pdf"])
