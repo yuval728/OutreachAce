@@ -59,5 +59,5 @@ def create_streamlit_app(llm, clean_text):
 
 if __name__ == "__main__":
     chain = Chain(os.getenv('API_KEY'), temperature=0.1, model_name='llama-3.1-70b-versatile')
-    st.set_page_config(layout="wide", page_title="Cold Email Generator", page_icon="📧")
+    st.set_page_config(layout="wide", page_title="OutReachAce", page_icon="📧")
     create_streamlit_app(chain, clean_text)
