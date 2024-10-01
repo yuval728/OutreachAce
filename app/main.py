@@ -43,11 +43,16 @@ def create_streamlit_app(llm, clean_text):
             for job in jobs:
 
                 st.markdown(f"### Job Title: {job['role']}")
+                
                 email = llm.write_mail(job, resume_summary=resume_summary, only_links=use_resume_links_only)
                 st.code(email, language='markdown', wrap_lines=True)
                 
+                skill_gap = llm.write_skill_gap(job, resume_summary=resume_summary)
+                st.code(skill_gap, language='markdown', wrap_lines=True)
+                
                 cover_letter = llm.write_cover_letter(job, resume_summary=resume_summary)
                 st.code(cover_letter, language='markdown', wrap_lines=True)
+                
 
         except Exception as e:
             st.error(f"An Error Occurred: {e}")

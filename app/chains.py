@@ -138,6 +138,33 @@ class Chain():
         res = chain_cover_letter.invoke(input={'job_description': job, 'resume_summary': resume_summary})
         return res.content
 
+    def write_skill_gap(self, job, resume_summary):
+        
+        prompt_skill_gap = PromptTemplate.from_template(
+            """
+            ### JOB DESCRIPTION:
+            {job_description}
+            
+            ### RESUME SUMMARY:
+            {resume_summary}
+            
+            ### INSTRUCTION:
+            You are Yuval, a computer science student looking to apply for a job.
+            Your job is to identify the skills gap between the job description and your resume summary. 
+            List down the skills you have, similar skills and the skills required for the job.
+            Identify the skills missing from your resume and the skills you need to acquire.
+            Do not provide a preamble.
+            ### SKILL GAP (NO PREAMBLE):
+
+            """
+        )
+        
+        chain_skill_gap = prompt_skill_gap | self.llm
+        
+        res = chain_skill_gap.invoke(input={'job_description': job, 'resume_summary': resume_summary})
+        return res.content
+        
+
 if __name__ == '__main__':
     api_key = os.getenv('API_KEY')
     print(api_key)
