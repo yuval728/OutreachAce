@@ -17,7 +17,7 @@ def create_streamlit_app(llm, clean_text):
     url_input = st.text_input("Enter a Job URL:", value="https://jobs.nike.com/job/R-31388")
 
     # Checkbox for using only resume links
-    use_resume_links_only = st.checkbox("Use only links from my resume")
+    use_resume_links_only = False # st.checkbox("Use only links from my resume")
 
     # Submit button
     submit_button = st.button("Submit")
