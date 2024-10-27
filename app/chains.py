@@ -61,14 +61,13 @@ class Chain():
         # Return the extracted summary text
         return summary_res.content
     
-    def write_mail(self, job, resume_summary, only_links=False):
+    def write_mail(self, job, resume_summary):
         """
         Generate a cold email based on the job details and resume summary.
         
         Args:
             job (dict): A dictionary containing the job details extracted from the website.
             resume_summary (str): A string containing the extracted resume summary.
-            only_links (bool): If True, only include the links from the resume summary.
         """
         
         
@@ -80,10 +79,6 @@ class Chain():
             ### RESUME SUMMARY:
             {resume_summary}
             
-            ### Condition:
-            Do I only want the links from the resume summary? {only_links}
-            
-
             ### INSTRUCTION:
             You are Yuval, a computer science student looking to apply for a job.
             Your job is to write a compelling cold email to the hiring manager regarding the job mentioned above, 
@@ -100,7 +95,7 @@ class Chain():
          
         chain_email = prompt_email | self.llm
         
-        res = chain_email.invoke(input={'job_description': job, 'resume_summary': resume_summary, 'only_links': only_links})
+        res = chain_email.invoke(input={'job_description': job, 'resume_summary': resume_summary})
         return res.content
         
     def write_cover_letter(self, job, resume_summary):

@@ -14,10 +14,15 @@ def create_streamlit_app(llm, clean_text):
     resume_file = st.file_uploader("Upload your resume (PDF):", type=["pdf"])
     
     # Input for job URL
-    url_input = st.text_input("Enter a Job URL:", value="https://jobs.nike.com/job/R-31388")
+    toggle_job_input_type = st.radio("Select Job Input Type:", ["URL", "Text"])
+    
+    if toggle_job_input_type == "Text":
+        job_input = st.text_area("Enter Job Description:")
+        
+    else:
+        job_input = st.text_input("Enter a Job URL:", value="https://jobs.nike.com/job/R-31388")
 
-    # Checkbox for using only resume links
-    use_resume_links_only = False # st.checkbox("Use only links from my resume")
+
 
     # Submit button
     submit_button = st.button("Submit")
@@ -34,8 +39,11 @@ def create_streamlit_app(llm, clean_text):
                 return
 
             # Load job data from the provided URL
-            loader = WebBaseLoader([url_input])
-            data = clean_text(loader.load().pop().page_content)
+            if toggle_job_input_type == "URL":
+                loader = WebBaseLoader([job_input])
+                data = clean_text(loader.load().pop().page_content)
+            else:
+                data = clean_text(job_input)
 
             # Extract job postings
             jobs = llm.extract_jobs(data)
@@ -44,7 +52,7 @@ def create_streamlit_app(llm, clean_text):
 
                 st.markdown(f"### Job Title: {job['role']}")
                 
-                email = llm.write_mail(job, resume_summary=resume_summary, only_links=use_resume_links_only)
+                email = llm.write_mail(job, resume_summary=resume_summary)
                 st.code(email, language='markdown', wrap_lines=True)
                 
                 skill_gap = llm.write_skill_gap(job, resume_summary=resume_summary)
