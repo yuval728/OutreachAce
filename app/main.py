@@ -56,7 +56,7 @@ def create_streamlit_app(llm, clean_text):
             else:
                 data = clean_text(job_input)
 
-            save_json({'job': job_input}, 'job_data.json')
+            # save_json({'job': job_input}, 'job_data.json')
             # Extract job postings
             jobs = llm.extract_jobs(data)
 
