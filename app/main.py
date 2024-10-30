@@ -4,8 +4,20 @@ from chains import Chain
 from utils import clean_text, extract_text_from_pdf  # Assuming this is your function for extracting PDF text
 import os
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
+
+def save_json(data, filename):
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            existing_data = json.load(f)
+            existing_data.append(data)
+        with open(filename, 'w') as f:
+            json.dump(existing_data, f)
+    else:
+        with open(filename, 'w') as f:
+            json.dump([data], f)
 
 def create_streamlit_app(llm, clean_text):
     st.title("📧 OutReachAce")
@@ -22,8 +34,7 @@ def create_streamlit_app(llm, clean_text):
     else:
         job_input = st.text_input("Enter a Job URL:", value="https://jobs.nike.com/job/R-31388")
 
-
-
+    
     # Submit button
     submit_button = st.button("Submit")
 
@@ -45,6 +56,7 @@ def create_streamlit_app(llm, clean_text):
             else:
                 data = clean_text(job_input)
 
+            save_json({'job': job_input}, 'job_data.json')
             # Extract job postings
             jobs = llm.extract_jobs(data)
 
