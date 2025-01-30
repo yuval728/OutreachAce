@@ -6,7 +6,7 @@ from langchain_core.exceptions import OutputParserException
 
 
 class Chain():
-    def __init__(self, api_key, model_name='llama-3.1-70b-versatile',temperature=0.5, max_tokens=8000):
+    def __init__(self, api_key, model_name='llama-3.3-70b-versatile',temperature=0.5, max_tokens=8000):
         
         self.llm = ChatGroq(
             api_key=api_key,
